@@ -1,0 +1,70 @@
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding-top: 0.75rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #6b7280;
+  letter-spacing: 0.5px;
+}
+
+
+.slider-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.slider-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.slider-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.endpoint-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 0.6rem 0.75rem;
+
+  .endpoint-url {
+    font-family: monospace;
+    font-size: 0.8rem;
+    color: #0d9488;
+  }
+}
+
+.w-full {
+  width: 100%;
+}
+
+:host ::ng-deep .start-btn {
+  background: #0d9488 !important;
+  border-color: #0d9488 !important;
+  margin-top: 0.5rem;
+}

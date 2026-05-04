@@ -1,0 +1,37 @@
+<div class="task-list-container">
+  <div class="list-header">
+    <div>
+      <h2 class="list-title">Active Tasks</h2>
+      <p class="list-subtitle">Monitor, pause, and inspect data collection in progress.</p>
+    </div>
+
+    @if (hasTasks) {
+      <div class="global-controls">
+        <p-button label="Pause All" icon="pi pi-pause" [outlined]="true" size="small"
+                  (onClick)="onPauseAll.emit()" />
+        <p-button label="Resume All" icon="pi pi-play" [outlined]="true" size="small"
+                  (onClick)="onResumeAll.emit()" />
+      </div>
+    }
+  </div>
+
+  @if (hasTasks) {
+    <div class="task-cards">
+      @for (task of tasks(); track task.id) {
+        <app-task-card
+          [task]="task"
+          (onView)="onView.emit($event)"
+          (onPause)="onPause.emit($event)"
+          (onResume)="onResume.emit($event)"
+          (onRemove)="onRemove.emit($event)"
+        />
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <i class="pi pi-clock empty-icon"></i>
+      <h3>No active tasks</h3>
+      <p>Configure a new task in the panel on the right to start collecting data.</p>
+    </div>
+  }
+</div>

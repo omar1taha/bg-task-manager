@@ -1,0 +1,37 @@
+<div class="right-panel">
+  <p-tabs [value]="activeTab()" (valueChange)="setActiveTab($event)">
+    <p-tablist>
+      <p-tab [value]="0">
+        <i class="pi pi-plus"></i> New Task
+      </p-tab>
+      <p-tab [value]="1">
+        <i class="pi pi-eye"></i> Data Viewer
+      </p-tab>
+      <p-tab [value]="2">
+        <i class="pi pi-list"></i> Activity
+      </p-tab>
+    </p-tablist>
+
+    <p-tabpanels>
+      <p-tabpanel [value]="0">
+        <app-task-form (onSubmit)="onCreateTask.emit($event)" />
+      </p-tabpanel>
+
+      <p-tabpanel [value]="1">
+        <app-data-viewer
+          [task]="viewedTask()"
+          (onPause)="onPause.emit($event)"
+          (onResume)="onResume.emit($event)"
+          (onRemove)="onRemove.emit($event)"
+        />
+      </p-tabpanel>
+
+      <p-tabpanel [value]="2">
+        <app-activity-log
+          [entries]="activityLog()"
+          (clearLog)="onClearLog.emit()"
+        />
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+</div>

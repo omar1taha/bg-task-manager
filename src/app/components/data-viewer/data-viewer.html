@@ -1,0 +1,79 @@
+@if (task(); as t) {
+  <div class="viewer">
+    <div class="viewer-header">
+      <h3 class="viewer-title">{{ t.name | uppercase }}</h3>
+      <p-tag [value]="t.status" [severity]="statusSeverity" [rounded]="true" />
+    </div>
+    <div class="viewer-meta">
+      <span>{{ t.id }}</span>
+      <span>&middot;</span>
+      <span>{{ t.dataType | uppercase }}</span>
+    </div>
+
+    <div class="big-counter">
+      <span class="counter-current">{{ t.collected.length }}</span>
+      <span class="counter-total"> / {{ t.amount }}</span>
+      <span class="counter-pct">{{ progress }}%</span>
+    </div>
+    <p-progressbar [value]="progress" [showValue]="false" styleClass="viewer-progress" />
+
+    <div class="info-grid">
+      <div class="info-item">
+        <span class="info-label">TYPE</span>
+        <span class="info-value">{{ t.dataType }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">INTERVAL</span>
+        <span class="info-value">{{ t.interval }}s</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">COLLECTED</span>
+        <span class="info-value">{{ t.collected.length }} / {{ t.amount }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">REMAINING</span>
+        <span class="info-value">{{ remaining }}</span>
+      </div>
+    </div>
+
+    <div class="viewer-actions">
+      @if (isRunning) {
+        <p-button label="Pause" icon="pi pi-pause" [outlined]="true" size="small"
+                  styleClass="w-half" (onClick)="onPause.emit(t.id)" />
+      }
+      @if (isPaused) {
+        <p-button label="Resume" icon="pi pi-play" [outlined]="true" size="small"
+                  styleClass="w-half" (onClick)="onResume.emit(t.id)" />
+      }
+      <p-button label="Remove" icon="pi pi-trash" [outlined]="true" size="small"
+                severity="danger" styleClass="w-half" (onClick)="onRemove.emit(t.id)" />
+    </div>
+
+    <div class="collected-section">
+      <div class="collected-header">
+        <span class="field-label">COLLECTED DATA</span>
+        <span class="collected-count">
+          <span class="dot green"></span>
+          {{ t.collected.length }} items &middot; live
+        </span>
+      </div>
+
+      <div class="collected-list">
+        @for (item of t.collected.slice().reverse(); track item.id; let i = $index) {
+          <div class="collected-item">
+            <img [src]="item.thumbnailUrl" [alt]="item.title" class="item-thumb" />
+            <div class="item-info">
+              <span class="item-title">{{ item.title }}</span>
+            </div>
+            <span class="item-index">#{{ t.collected.length - i }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="no-task">
+    <i class="pi pi-eye" style="font-size: 2rem; color: #d1d5db;"></i>
+    <p>Select a task to view its data</p>
+  </div>
+}

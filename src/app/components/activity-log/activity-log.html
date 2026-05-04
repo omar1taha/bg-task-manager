@@ -1,0 +1,21 @@
+<div class="log-container">
+  @if (entries().length > 0) {
+    <div class="log-list">
+      @for (entry of entries().slice().reverse(); track $index) {
+        <div class="log-entry">
+          <span class="log-time">{{ entry.timestamp | date:'HH:mm:ss' }}</span>
+          <span class="log-task-id">{{ entry.taskId }}</span>
+          <span class="log-message">{{ entry.message }}</span>
+        </div>
+      }
+    </div>
+    <div class="log-footer">
+      <a class="clear-link" (click)="clearLog.emit()">clear log</a>
+    </div>
+  } @else {
+    <div class="empty-log">
+      <i class="pi pi-list" style="font-size: 2rem; color: #d1d5db;"></i>
+      <p>No activity yet</p>
+    </div>
+  }
+</div>

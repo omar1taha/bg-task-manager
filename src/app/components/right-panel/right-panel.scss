@@ -1,0 +1,25 @@
+.right-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #e5e7eb;
+  background: #fff;
+
+  :host ::ng-deep {
+    .p-tabs {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .p-tabpanels {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+
+    .p-tabpanel {
+      height: 100%;
+    }
+  }
+}

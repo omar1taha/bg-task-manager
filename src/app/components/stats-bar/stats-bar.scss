@@ -1,0 +1,30 @@
+.stats-bar {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 0.35rem 0.85rem;
+  background: #fff;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+
+  &.blue { background: #3b82f6; }
+  &.green { background: #22c55e; }
+  &.amber { background: #f59e0b; }
+  &.green-fill { background: #16a34a; }
+  &.red { background: #ef4444; }
+}

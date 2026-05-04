@@ -1,0 +1,96 @@
+.task-card {
+  border: 1px solid #e5e7eb;
+  border-left: 4px solid #0d9488;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  background: #fff;
+  margin-bottom: 0.75rem;
+}
+
+.card-header {
+  margin-bottom: 0.75rem;
+}
+
+.card-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0;
+  color: #1f2937;
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 0.25rem;
+}
+
+.task-id {
+  font-family: monospace;
+}
+
+.separator {
+  color: #d1d5db;
+}
+
+.card-progress {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
+}
+
+.count-current {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.count-total {
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+.interval-label {
+  font-size: 0.75rem;
+  color: #9ca3af;
+
+  i { margin-right: 0.2rem; }
+}
+
+:host ::ng-deep .task-progress {
+  height: 6px !important;
+  border-radius: 4px;
+
+  .p-progressbar-value {
+    background: #0d9488;
+  }
+}
+
+.last-fetched {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+
+  .fetched-name {
+    color: #0d9488;
+    font-weight: 500;
+  }
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #f3f4f6;
+}

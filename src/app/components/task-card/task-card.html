@@ -1,0 +1,48 @@
+<div class="task-card">
+  <div class="card-header">
+    <div class="card-title-row">
+      <h3 class="task-name">{{ task().name | uppercase }}</h3>
+      <p-tag [value]="task().status" [severity]="statusSeverity" [rounded]="true" />
+    </div>
+    <div class="task-meta">
+      <span class="task-id">{{ task().id }}</span>
+      <span class="separator">&middot;</span>
+      <span>every {{ task().interval }}s</span>
+      <span class="separator">&middot;</span>
+      <p-tag [value]="task().dataType | uppercase" severity="info" />
+    </div>
+  </div>
+
+  <div class="card-progress">
+    <div class="progress-count">
+      <span class="count-current">{{ task().collected.length }}</span>
+      <span class="count-total"> / {{ task().amount }} {{ task().dataType }}</span>
+    </div>
+    <span class="interval-label">
+      <i class="pi pi-clock"></i> {{ task().interval }}s
+    </span>
+  </div>
+
+  <p-progressbar [value]="progress" [showValue]="false" styleClass="task-progress" />
+
+  @if (lastFetched) {
+    <div class="last-fetched">
+      Fetched: <span class="fetched-name">{{ lastFetched }}</span>
+    </div>
+  }
+
+  <div class="card-actions">
+    <p-button label="View" icon="pi pi-eye" [outlined]="true" size="small"
+              (onClick)="onView.emit(task().id)" />
+    @if (isRunning) {
+      <p-button label="Pause" icon="pi pi-pause" [outlined]="true" size="small"
+                (onClick)="onPause.emit(task().id)" />
+    }
+    @if (isPaused) {
+      <p-button label="Resume" icon="pi pi-play" [outlined]="true" size="small"
+                (onClick)="onResume.emit(task().id)" />
+    }
+    <p-button icon="pi pi-times" [rounded]="true" [text]="true" size="small" severity="danger"
+              (onClick)="onRemove.emit(task().id)" />
+  </div>
+</div>

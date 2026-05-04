@@ -1,0 +1,17 @@
+<div class="type-cards">
+  @for (opt of options(); track opt.value) {
+    <button type="button"
+            class="type-card"
+            [class.selected]="value() === opt.value"
+            (click)="select(opt.value)">
+      <span class="card-icon">
+        @switch (opt.value) {
+          @case ('users') { <i class="pi pi-users"></i> }
+          @case ('posts') { <i class="pi pi-file"></i> }
+          @case ('photos') { <i class="pi pi-image"></i> }
+        }
+      </span>
+      <span class="card-label">{{ opt.label }}</span>
+    </button>
+  }
+</div>
