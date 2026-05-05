@@ -1,10 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { HeaderComponent } from './components/header/header';
 import { StatsBarComponent } from './components/stats-bar/stats-bar';
 import { TaskListComponent } from './components/task-list/task-list';
 import { RightPanelComponent } from './components/right-panel/right-panel';
-import { CollectionTask, ActivityLogEntry, TaskStatus } from './models/task.model';
+import { CollectionTask, ActivityLogEntry } from './models/task.model';
 import { TaskFormValue } from './components/task-form/task-form';
+import { TaskService } from './services/task.service';
 
 @Component({
   selector: 'app-root',
@@ -13,29 +14,15 @@ import { TaskFormValue } from './components/task-form/task-form';
   styleUrl: './app.scss'
 })
 export class App {
-  tasks = signal<CollectionTask[]>([]);
+  private readonly taskService = inject(TaskService);
+
+  tasks = this.taskService.tasks;
   activityLog = signal<ActivityLogEntry[]>([]);
   viewedTask = signal<CollectionTask | null>(null);
 
-  private taskCounter = 0;
-
   handleCreateTask(formValue: TaskFormValue) {
-    this.taskCounter++;
-    const id = `TF-${String(this.taskCounter).padStart(3, '0')}`;
-
-    const newTask: CollectionTask = {
-      id,
-      name: formValue.name,
-      dataType: formValue.dataType,
-      amount: formValue.amount,
-      interval: formValue.interval,
-      status: TaskStatus.Pending,
-      collected: [],
-      createdAt: new Date()
-    };
-
-    this.tasks.update(list => [...list, newTask]);
-    this.addLog(id, `queued — ${formValue.name} (${formValue.amount} ${formValue.dataType} every ${formValue.interval}s)`);
+    const task = this.taskService.createTask(formValue);
+    this.addLog(task.id, `queued — ${formValue.name} (${formValue.amount} ${formValue.dataType} every ${formValue.interval}s)`);
   }
 
   handleView(taskId: string) {

@@ -24,8 +24,8 @@ export class RightPanelComponent {
   onRemove = output<string>();
   onClearLog = output<void>();
 
-  setActiveTab(value: number) {
-    this.activeTab.set(value);
+  setActiveTab(value: string | number | undefined) {
+    this.activeTab.set(Number(value ?? 0));
   }
 
   switchToViewer() {
