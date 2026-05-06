@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HeaderComponent } from './components/header/header';
 import { StatsBarComponent } from './components/stats-bar/stats-bar';
 import { TaskListComponent } from './components/task-list/task-list';
@@ -20,6 +21,12 @@ export class App {
   activityLog = signal<ActivityLogEntry[]>([]);
   viewedTaskId = signal<string | null>(null);
   viewedTask = computed(() => this.tasks().find(t => t.id === this.viewedTaskId()) || null);
+
+  constructor() {
+    this.taskService.logEvent$
+      .pipe(takeUntilDestroyed())
+      .subscribe(event => this.addLog(event.taskId, event.message));
+  }
 
   handleCreateTask(formValue: TaskFormValue) {
     const task = this.taskService.createTask(formValue);

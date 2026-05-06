@@ -1,59 +1,48 @@
-# BgTaskManager
+# DataPipeline — Background Task Manager
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.9.
+A single-page Angular application for configuring and monitoring background data collection tasks with real-time progress tracking and full pause/resume control.
 
-## Development server
+## Technology Stack
 
-To start a local development server, run:
+- **Framework:** Angular 21 (standalone components, signals, zoneless change detection)
+- **Language:** TypeScript (strict mode)
+- **UI Library:** PrimeNG 21
+- **Reactive Layer:** RxJS 7.8
+- **Styling:** SCSS
+- **Forms:** Reactive Forms
 
-```bash
-ng serve
-```
+## Data Source
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+**Photos** — `https://jsonplaceholder.typicode.com/photos/{id}` (IDs 1–5000)
 
-## Code scaffolding
+I chose the Photos endpoint because it returns structured records with a title, URL, and thumbnail — which makes the Data Viewer panel more visually interesting than plain text from Posts or Users. The large ID range (5000) also avoids cycling issues when running multiple tasks concurrently.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## How to Run
 
 ```bash
-ng generate --help
+npm install
+npm start
 ```
 
-## Building
+The app serves on `http://localhost:4200`.
 
-To build the project run:
+## Features
 
-```bash
-ng build
-```
+- **Task Creation** — configure name, data type, record count (5–80), and fetch interval (0.5s–5s) via reactive form with slider inputs
+- **Background Execution** — tasks fetch one record at a time at the configured interval, with live progress updates
+- **Pause / Resume** — per-task and global (Pause All / Resume All) controls with proper RxJS subscription cancellation
+- **Data Viewer** — inspect a running task's collected records, progress, and metadata in real time
+- **Activity Log** — timestamped event history tracking the full task lifecycle (queued, started, each fetch, paused, resumed, completed)
+- **Statistics Bar** — live counts for total, running, paused, completed, and failed tasks
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Architecture Decisions
 
-## Running unit tests
+- **Centralized state via `TaskService`** — all task state lives in a single Angular signal (`tasks`). Components read from this signal and dispatch actions through the service. The service also exposes a `logEvent$` observable stream for activity log events emitted during execution.
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+- **Standalone components with `OnPush`** — each component is self-contained with its own imports and uses `OnPush` change detection where appropriate for performance.
 
-```bash
-ng test
-```
+- **RxJS-based execution engine** — each task runs on an `interval()` pipeline with `concatMap` for sequential HTTP fetches. Pausing unsubscribes from the interval (true cancellation), and resuming creates a fresh subscription that continues from the current collected count.
 
-## Running end-to-end tests
+- **No memory leaks** — subscriptions are cleaned up via `takeUntil` on service destroy, `takeUntilDestroyed` in components, and manual unsubscription when tasks are paused or removed.
 
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- **Signal-driven UI** — Angular signals power the reactive data flow from service to components, with `computed` signals for derived state like the currently viewed task and task statistics.

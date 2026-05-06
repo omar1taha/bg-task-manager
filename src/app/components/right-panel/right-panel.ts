@@ -24,11 +24,16 @@ export class RightPanelComponent {
   onRemove = output<string>();
   onClearLog = output<void>();
 
+  private lastViewedId: string | null = null;
+
   constructor() {
     effect(() => {
-      if (this.viewedTask()) {
+      const task = this.viewedTask();
+      const id = task?.id ?? null;
+      if (id && id !== this.lastViewedId) {
         this.activeTab.set(1);
       }
+      this.lastViewedId = id;
     });
   }
 

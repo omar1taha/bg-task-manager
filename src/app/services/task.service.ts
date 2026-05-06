@@ -14,6 +14,8 @@ export class TaskService implements OnDestroy {
   private nextPhotoId = 1;
   private readonly subscriptions = new Map<string, Subscription>();
   private readonly destroy$ = new Subject<void>();
+  private readonly _logEvent$ = new Subject<{ taskId: string; message: string }>();
+  readonly logEvent$ = this._logEvent$.asObservable();
 
   createTask(formValue: TaskFormValue): CollectionTask {
     this.taskCounter++;
@@ -70,6 +72,8 @@ export class TaskService implements OnDestroy {
     const task = this.tasks().find(t => t.id === taskId);
     if (!task) return;
 
+    this._logEvent$.next({ taskId, message: 'started' });
+
     const intervalMs = task.interval * 1000;
 
     const sub = interval(intervalMs)
@@ -93,12 +97,20 @@ export class TaskService implements OnDestroy {
                 : t
             )
           );
+          const current = this.tasks().find(t => t.id === taskId);
+          if (current) {
+            this._logEvent$.next({
+              taskId,
+              message: `[${current.collected.length}/${current.amount}] ${record.title}`
+            });
+          }
         })
       )
       .subscribe({
         complete: () => {
           this.subscriptions.delete(taskId);
           this.updateTaskStatus(taskId, TaskStatus.Completed);
+          this._logEvent$.next({ taskId, message: 'completed' });
         },
       });
 
