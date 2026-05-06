@@ -33,18 +33,17 @@ export class App {
   }
 
   handlePause(taskId: string) {
-    // TODO: wire to service to actually stop the interval
-    console.log('pausing', taskId);
+    this.taskService.pauseTask(taskId);
     this.addLog(taskId, 'paused');
   }
 
   handleResume(taskId: string) {
-    console.log('resuming', taskId);
+    this.taskService.resumeTask(taskId);
     this.addLog(taskId, 'resumed');
   }
 
   handleRemove(taskId: string) {
-    this.tasks.update(list => list.filter(t => t.id !== taskId));
+    this.taskService.removeTask(taskId);
     if (this.viewedTask()?.id === taskId) {
       this.viewedTask.set(null);
     }
@@ -52,11 +51,13 @@ export class App {
   }
 
   handlePauseAll() {
-    // TODO: loop through running tasks and pause each
+    this.taskService.pauseAll();
+    this.addLog('ALL', 'paused all');
   }
 
   handleResumeAll() {
-    this.tasks().forEach(t => console.log(t.id, t.status));
+    this.taskService.resumeAll();
+    this.addLog('ALL', 'resumed all');
   }
 
   handleClearLog() {

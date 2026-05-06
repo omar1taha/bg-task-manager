@@ -1,19 +1,19 @@
-import { Injectable, inject, signal, DestroyRef } from '@angular/core';
+import { Injectable, inject, signal, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { interval, concatMap, takeWhile, tap } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subject, Subscription, interval, concatMap, takeWhile, tap, takeUntil } from 'rxjs';
 import { CollectionTask, TaskStatus, PhotoRecord } from '../models/task.model';
 import { TaskFormValue } from '../components/task-form/task-form';
 
 @Injectable({ providedIn: 'root' })
-export class TaskService {
+export class TaskService implements OnDestroy {
   private readonly http = inject(HttpClient);
-  private readonly destroyRef = inject(DestroyRef);
 
   readonly tasks = signal<CollectionTask[]>([]);
 
   private taskCounter = 0;
   private nextPhotoId = 1;
+  private readonly subscriptions = new Map<string, Subscription>();
+  private readonly destroy$ = new Subject<void>();
 
   createTask(formValue: TaskFormValue): CollectionTask {
     this.taskCounter++;
@@ -31,21 +31,53 @@ export class TaskService {
     };
 
     this.tasks.update(list => [...list, newTask]);
-    this.startExecution(id, formValue.interval, formValue.amount);
+    this.startExecution(id);
 
     return newTask;
   }
 
-  private startExecution(taskId: string, intervalSec: number, amount: number): void {
+  pauseTask(taskId: string): void {
+    this.cancelSubscription(taskId);
+    this.updateTaskStatus(taskId, TaskStatus.Paused);
+  }
+
+  resumeTask(taskId: string): void {
+    const task = this.tasks().find(t => t.id === taskId);
+    if (!task || task.status !== TaskStatus.Paused) return;
+    this.startExecution(taskId);
+  }
+
+  removeTask(taskId: string): void {
+    this.cancelSubscription(taskId);
+    this.tasks.update(list => list.filter(t => t.id !== taskId));
+  }
+
+  pauseAll(): void {
+    this.tasks()
+      .filter(t => t.status === TaskStatus.Running)
+      .forEach(t => this.pauseTask(t.id));
+  }
+
+  resumeAll(): void {
+    this.tasks()
+      .filter(t => t.status === TaskStatus.Paused)
+      .forEach(t => this.resumeTask(t.id));
+  }
+
+  private startExecution(taskId: string): void {
     this.updateTaskStatus(taskId, TaskStatus.Running);
 
-    const intervalMs = intervalSec * 1000;
+    const task = this.tasks().find(t => t.id === taskId);
+    if (!task) return;
 
-    interval(intervalMs)
+    const intervalMs = task.interval * 1000;
+
+    const sub = interval(intervalMs)
       .pipe(
+        takeUntil(this.destroy$),
         takeWhile(() => {
-          const task = this.tasks().find(t => t.id === taskId);
-          return !!task && task.collected.length < amount;
+          const current = this.tasks().find(t => t.id === taskId);
+          return !!current && current.collected.length < current.amount;
         }),
         concatMap(() => {
           const photoId = this.getNextPhotoId();
@@ -55,20 +87,30 @@ export class TaskService {
         }),
         tap((record: PhotoRecord) => {
           this.tasks.update(list =>
-            list.map(task =>
-              task.id === taskId
-                ? { ...task, collected: [...task.collected, record] }
-                : task
+            list.map(t =>
+              t.id === taskId
+                ? { ...t, collected: [...t.collected, record] }
+                : t
             )
           );
-        }),
-        takeUntilDestroyed(this.destroyRef)
+        })
       )
       .subscribe({
         complete: () => {
+          this.subscriptions.delete(taskId);
           this.updateTaskStatus(taskId, TaskStatus.Completed);
         },
       });
+
+    this.subscriptions.set(taskId, sub);
+  }
+
+  private cancelSubscription(taskId: string): void {
+    const sub = this.subscriptions.get(taskId);
+    if (sub) {
+      sub.unsubscribe();
+      this.subscriptions.delete(taskId);
+    }
   }
 
   private updateTaskStatus(taskId: string, status: TaskStatus): void {
@@ -81,5 +123,12 @@ export class TaskService {
     const id = this.nextPhotoId;
     this.nextPhotoId = (this.nextPhotoId % 5000) + 1;
     return id;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.clear();
   }
 }
