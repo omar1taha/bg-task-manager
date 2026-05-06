@@ -1,3 +1,10 @@
+
+Here is video demonstration and also you can check screenshots attached:
+https://drive.google.com/file/d/1UxgNHGkewd-oUhaXF7mbdSN5drtuKmic/view?usp=sharing
+
+<img width="1440" height="795" alt="Screenshot 2026-05-06 at 3 31 55 PM" src="https://github.com/user-attachments/assets/5d2a3e11-4296-40d5-8cb6-519178835f64" />
+<img width="1440" height="789" alt="Screenshot 2026-05-06 at 3 32 02 PM" src="https://github.com/user-attachments/assets/cd09ee89-f9ac-42f0-bd27-c2cbedb9c94f" />
+
 # DataPipeline — Background Task Manager
 
 A single-page Angular application for configuring and monitoring background data collection tasks with real-time progress tracking and full pause/resume control.
