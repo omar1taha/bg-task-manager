@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, output, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, effect, input, output, signal } from '@angular/core';
 import { TabsModule } from 'primeng/tabs';
 import { CollectionTask, ActivityLogEntry } from '../../models/task.model';
 import { TaskFormComponent, TaskFormValue } from '../task-form/task-form';
@@ -24,11 +24,15 @@ export class RightPanelComponent {
   onRemove = output<string>();
   onClearLog = output<void>();
 
-  setActiveTab(value: string | number | undefined) {
-    this.activeTab.set(Number(value ?? 0));
+  constructor() {
+    effect(() => {
+      if (this.viewedTask()) {
+        this.activeTab.set(1);
+      }
+    });
   }
 
-  switchToViewer() {
-    this.activeTab.set(1);
+  setActiveTab(value: string | number | undefined) {
+    this.activeTab.set(Number(value ?? 0));
   }
 }

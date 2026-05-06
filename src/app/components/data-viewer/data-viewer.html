@@ -61,7 +61,7 @@
       <div class="collected-list">
         @for (item of t.collected.slice().reverse(); track item.id; let i = $index) {
           <div class="collected-item">
-            <img [src]="item.thumbnailUrl" [alt]="item.title" class="item-thumb" />
+            <img [src]="item.thumbnailUrl" [alt]="item.title" class="item-thumb" (error)="$event.target['src']='https://placehold.co/36'" />
             <div class="item-info">
               <span class="item-title">{{ item.title }}</span>
             </div>

@@ -1,9 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { HeaderComponent } from './components/header/header';
 import { StatsBarComponent } from './components/stats-bar/stats-bar';
 import { TaskListComponent } from './components/task-list/task-list';
 import { RightPanelComponent } from './components/right-panel/right-panel';
-import { CollectionTask, ActivityLogEntry } from './models/task.model';
+import { ActivityLogEntry } from './models/task.model';
 import { TaskFormValue } from './components/task-form/task-form';
 import { TaskService } from './services/task.service';
 
@@ -18,7 +18,8 @@ export class App {
 
   tasks = this.taskService.tasks;
   activityLog = signal<ActivityLogEntry[]>([]);
-  viewedTask = signal<CollectionTask | null>(null);
+  viewedTaskId = signal<string | null>(null);
+  viewedTask = computed(() => this.tasks().find(t => t.id === this.viewedTaskId()) || null);
 
   handleCreateTask(formValue: TaskFormValue) {
     const task = this.taskService.createTask(formValue);
@@ -26,10 +27,7 @@ export class App {
   }
 
   handleView(taskId: string) {
-    const task = this.tasks().find(t => t.id === taskId);
-    if (task) {
-      this.viewedTask.set(task);
-    }
+    this.viewedTaskId.set(taskId);
   }
 
   handlePause(taskId: string) {
@@ -44,8 +42,8 @@ export class App {
 
   handleRemove(taskId: string) {
     this.taskService.removeTask(taskId);
-    if (this.viewedTask()?.id === taskId) {
-      this.viewedTask.set(null);
+    if (this.viewedTaskId() === taskId) {
+      this.viewedTaskId.set(null);
     }
     this.addLog(taskId, 'removed');
   }
